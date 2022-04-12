@@ -33,16 +33,15 @@ function core(i, distance){
         flight[indexOfObj].availability = i;
         // 1 mile = 5280 feet
         // 1 h = 60m
-        let take_off_and_departure = ((flight[indexOfObj].height/5280)/30)*2*60;
+        let take_off_and_departure = ((flight[indexOfObj].height/5280)/30)*2*600;
         let flight_time = (distance/30)*60;
         // Miliseconds
         flight[indexOfObj].arrive= new Date(Date.now()+((take_off_and_departure+flight_time)*60000));
         console.log(new Date()+': Drone '+flight[indexOfObj].availability+' approved for take-off at altitude '+flight[indexOfObj].height);
-        return true;
+        // return true;
     }else{
         console.log(new Date()+': Drone '+i+' declined take-off.');
-        approval(i, distance);
-        return false;
+        // return false;
     }
 }
 function passenger(wait, i){
@@ -50,13 +49,6 @@ function passenger(wait, i){
         console.log(new Date()+": A passenger arrived for Drone "+i+".");
         core(i, distance());
     }, wait);
-}
-function approval(i, distance){
-    let refresh = setInterval(function(){
-        if(core(i, distance)){
-            clearInterval(refresh);
-        }
-    }, 60000);
 }
 function run(i){
     let wait = wait_time()*100*60;
@@ -70,7 +62,7 @@ setInterval(function(){
     if(landed >= 0) {
         console.log(new Date().toString()+': Drone '+flight[landed].availability+' landed.');
         flight[landed].availability = "available";
-        flight[landed].arrive = "NULL";
+        flight[landed].arrive = "empty";
     }
     for (let i = 1; i <= 20; i++) {
         let in_air = flight.findIndex(o => o.availability === i);
@@ -83,16 +75,25 @@ setInterval(function(){
         }else if(time_left[i] <= new Date()){
             let left = mins_and_secs(time_left[i] - new Date());
             $('.drones div').eq(i).html(i+" # (Ground) Waiting to request a take off again");
-        }else if(ticker < 14400){
-            run(i);
         }else{
             $('.drones div').eq(i).html(i+" # (Ground) Landed");
         }
     }
-    if(ticker >= 14400){
-        alert("The simulation has been running for 4 hours! If you'd like to let all the drones land please click OK");
-    }
+
 },1000);
+let count = 0;
 for (let i = 1; i <= 20; i++) {
     run(i);
 }
+setInterval(function(){
+    for (let i = 1; i <= 20; i++) {
+        let waiting = flight.findIndex(o => o.availability === i);
+        if(waiting < 0) {
+            run(i);
+        }
+    }
+    count++;
+    if(count >= 240){
+        clearInterval(this);
+    }
+}, 60000)

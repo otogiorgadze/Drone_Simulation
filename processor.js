@@ -33,7 +33,7 @@ function core(i, distance){
         flight[indexOfObj].availability = i;
         // 1 mile = 5280 feet
         // 1 h = 60m
-        let take_off_and_departure = ((flight[indexOfObj].height/5280)/30)*2*600;
+        let take_off_and_departure = ((flight[indexOfObj].height/5280)/30)*2*60;
         let flight_time = (distance/30)*60;
         // Miliseconds
         flight[indexOfObj].arrive= new Date(Date.now()+((take_off_and_departure+flight_time)*60000));
